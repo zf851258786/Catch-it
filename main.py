@@ -193,21 +193,6 @@ def keyUp(e):
 	player.direction = None
 	#按键抬起使角色静止
 
-def onMouseDown(e):
-	global player
-	
-	if e.offsetX > (stage.width / 2):
-		player.direction = "right"
-	else:
-		player.direction = "left"
-	#鼠标一个按键按下时角色受玩家控制左右移动
-
-def onMouseUp(e):
-	global player
-
-	player.direction = None
-	#鼠标抬起时角色静止
-
 def loop(e):
 	global player, itemLayer, addItemSpeed, addItemSpeedIndex
 
