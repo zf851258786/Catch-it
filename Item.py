@@ -28,6 +28,7 @@ class Item(Sprite):
 
 		# move down
 		self.y += self.mySpeed
+		print(self.mySpeed)
 
 		# check collision
 		if (abs(self.x + self.width / 2 - player.x - player.width / 2) <= (self.width + player.width) / 2) and (abs(self.y + self.height / 2 - player.y - player.height / 2) <= (self.height + player.height) / 2):
@@ -39,10 +40,6 @@ class Item(Sprite):
 			else:
 				self.dispatchEvent(Item.EVENT_MINUS_SCORE)
 				self.remove()
-
-			'''else:
-				# dispatch ourselves event that enter game over
-				self.dispatchEvent(Item.EVENT_GAME_OVER)'''
 
 		# remove self when this item moves out of stage
 		if self.y >= stage.height:
