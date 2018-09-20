@@ -24,11 +24,12 @@ keyboardEnabled = False         #键盘使能
 addItemSpeed = 40               #物体增加的理想速度
 addItemSpeedIndex = 0           #物体增加的实际速度
 score = 0                       #分数文本
-myTime = 0                      #玩家选择的时间长度
+myTime = 30                     #玩家选择的时间长度
 beginTime = 0                   #游戏开始的时间
 endTime = 0                     #实时的时间
 lastTime = 0                    #剩余时间
 playerNum = 0                   #选择的游戏人物序号
+Item.mySpeed = 5                #选择的物体掉落速度
 
 
 def main():
@@ -85,6 +86,53 @@ def main():
 	# result的值是由loadList传入的
 	# 通过判断loading的进程来判断何时调用loadComplete
 
+
+# 创建背景的函数
+def creatBg(name):
+	global dataList,stageLayer
+	stageLayer.removeAllChildren()	                # 移除原界面的背景和元素
+	stageLayer.removeAllEventListeners()
+
+	# 创建背景元素
+	bg = Bitmap(BitmapData(dataList[name]))
+	stageLayer.addChild(bg)
+	return bg
+
+	
+# 创建文本的函数
+def creatTxt(Txt,Size,X,Y,Color):
+	global stageLayer
+	txt = TextField()
+	txt.text = Txt
+	txt.size = Size
+	txt.x = X
+	txt.y = Y
+	txt.color = Color
+	stageLayer.addChild(txt)
+	return txt
+	# stage 是一个全局类，用于管理整个窗口，类似于Java中的window
+	# TextField类用于显示文本
+
+# 创建图片的函数
+def creatPict(Name,X,Y):
+	global dataList,stageLayer
+	picture = Bitmap(BitmapData(dataList[Name]))
+	picture.x = X
+	picture.y = Y
+	stageLayer.addChild(picture)
+	return picture
+
+# 创建Button的函数
+def creatButton(name,X,Y,function):
+	global dataList,stageLayer
+	button = Button(dataList[name],X,Y)
+	stageLayer.addChild(button)
+	button.addEventListener(MouseEvent.MOUSE_UP, function)
+	return button
+	# button类定义在button.py文件中，是Sprie类的子类
+	#此处为一个类对象MouseEvent对其成员MOUSE_DOWN的调用
+
+
 # 游戏初始界面
 def gameInit(result):
 	
@@ -103,33 +151,11 @@ def gameInit(result):
 	#此处使用的不是全局函数addChild,而是stageLayer对象调用的addChild,stageLayer作为self参数传入,使得bd添加在了stageLayer上
 
 	# 创建文本元素
-	titleTxt = TextField()                          # 生成文本类的实例对象
-	titleTxt.text = "忍住不要吃零食"                # 游戏的名字
-	titleTxt.size = 70                              # 设置文字大小
-	titleTxt.textColor = "black"                    # 设置文字颜色
-	titleTxt.x = (stage.width - titleTxt.width) / 2 # 设置文本的水平位置
-	# stage 是一个全局类，用于管理整个窗口，类似于Java中的window
-	titleTxt.y = 100                                # 设置文本的竖直位置
-	stageLayer.addChild(titleTxt)                   # 使文本显示到主界面上
-	# TextField类用于显示文本,以上代码生成的是第一行文本，即游戏的名字
+	titleTxt = creatTxt("忍住不能吃零食",70,155,100,"black")                        #以上代码生成的是第一行文本，即游戏的名字
 
 	# 创建按钮元素
-	button0 = Button(dataList["button0"])                           # 生成按钮类的实例对象
-	button0.x = stage.width - button0.width - 20                    # 设置按钮的水平位置
-	button0.y = 350                                                 # 设置按钮的竖直位置
-	stageLayer.addChild(button0)                                    # 使按钮显示到主界面上
-	button0.addEventListener(MouseEvent.MOUSE_UP, mySettings)       # 添加监听器，监听鼠标点击按钮
-	# button类定义在button.py文件中，是Sprie类的子类
-	#此处为一个类对象MouseEvent对其成员MOUSE_DOWN的调用
-	# button0是"开始游戏"按钮，点击按钮进入"设置"界面
-
-	# 创建按钮元素
-	button1 = Button(dataList["button1"])
-	button1.x = stage.width - button1.width - 20
-	button1.y = 420
-	stageLayer.addChild(button1)
-	button1.addEventListener(MouseEvent.MOUSE_UP, introduction)
-	# button1是"规则介绍"按钮，点击按钮进入"规则介绍"界面
+	button0 = creatButton("button0",stage.width - 225,350, mySettings)              # button0是"开始游戏"按钮，点击按钮进入"设置"界面
+	button1 = creatButton("button1",stage.width - 225,420, introduction)            # button1是"规则介绍"按钮，点击按钮进入"规则介绍"界面
 
 	# 创建音乐播放元素	
 	music0 = Sound()
@@ -143,24 +169,16 @@ def gameInit(result):
 	#加入键盘事件,用于控制游戏人物，同样为类对象调用
 	#keyDown和keyUp都是同文件中定义的函数,keyUp指的是按键未按下的状态,keyDown指的是案件按下的状态
 
+
 # 规则介绍界面
 def introduction(e):
-
-	# 移除原界面的背景和元素
-	stageLayer.removeAllChildren()
-	stageLayer.removeAllEventListeners()
-
+        
 	# 创建背景元素
-	bg1 = Bitmap(BitmapData(dataList["bg1"]))
-	stageLayer.addChild(bg1)
+	bg = creatBg("bg1")
 
 	# 创建按钮元素
-	button3 = Button(dataList["button0"])
-	button3.x = stage.width - button3.width - 10
-	button3.y = 520
-	stageLayer.addChild(button3)
-	button3.addEventListener(MouseEvent.MOUSE_UP, mySettings)
-	# button3是"开始游戏按钮"，点击按钮进入"设置"界面
+	button3 = creatButton("button0",stage.width - 215,520,mySettings)               # button3是"开始游戏"按钮，点击按钮进入"设置"界面
+
 
 # 设置界面(人物形象及难度等级)
 def mySettings(e):
@@ -200,111 +218,35 @@ def mySettings(e):
 		Item.mySpeed = 10
 		myTime = 60
 
-	# 移除原界面背景和元素
-	stageLayer.removeAllChildren()
-	stageLayer.removeAllEventListeners()
-
-	# 创建背景元素
-	bg2 = Bitmap(BitmapData(dataList["bg2"]))
-	stageLayer.addChild(bg2)
+        # 创建背景元素
+	bg = creatBg("bg2")
 
 	# 创建按钮元素
-	button00 = Button(dataList["player00"])
-	button00.x = 150
-	button00.y = 150
-	stageLayer.addChild(button00)
-	button00.addEventListener(MouseEvent.MOUSE_UP, myplayernum0)
-	# button00是第一个游戏人物按钮，点击按钮进入myplaernum0函数，即把选中的游戏人物序号设置为0
-	# 创建按钮元素
-	button01 = Button(dataList["player01"])
-	button01.x = 300
-	button01.y = 150
-	stageLayer.addChild(button01)
-	button01.addEventListener(MouseEvent.MOUSE_UP, myplayernum1)
-	# 创建按钮元素
-	button02 = Button(dataList["player02"])
-	button02.x = 450
-	button02.y = 150
-	stageLayer.addChild(button02)
-	button02.addEventListener(MouseEvent.MOUSE_UP, myplayernum2)
-	# 创建按钮元素
-	button03 = Button(dataList["player03"])
-	button03.x = 600
-	button03.y = 150
-	stageLayer.addChild(button03)
-	button03.addEventListener(MouseEvent.MOUSE_UP, myplayernum3)
-	
-	# 创建按钮元素
-	button10 = Button(dataList["level0"])
-	button10.x = 175
-	button10.y = 350
-	stageLayer.addChild(button10)
-	button10.addEventListener(MouseEvent.MOUSE_UP, myspeed0)
-	# button10是第一个难度等级按钮，点击按钮进入myspeed0函数，即把物体下落速度设置为5，倒计时设置为30s
-	# 创建按钮元素
-	button11 = Button(dataList["level1"])
-	button11.x = 350
-	button11.y = 350
-	stageLayer.addChild(button11)
-	button11.addEventListener(MouseEvent.MOUSE_UP, myspeed1)
-	# 创建按钮元素
-	button12 = Button(dataList["level2"])
-	button12.x = 525
-	button12.y = 350
-	stageLayer.addChild(button12)
-	button12.addEventListener(MouseEvent.MOUSE_UP, myspeed2)
-
-	# 创建按钮元素
-	button4 = Button(dataList["button0"])
-	button4.x = stage.width - button4.width - 10
-	button4.y = 520
-	stageLayer.addChild(button4)
-	button4.addEventListener(MouseEvent.MOUSE_UP, ensureSettings)
-	# button4是"开始游戏"按钮
+	button00 = creatButton("player00",150,150,myplayernum0)                         # button00是第一个游戏人物按钮，点击按钮进入myplaernum0函数，即把选中的游戏人物序号设置为0
+	button01 = creatButton("player01",300,150,myplayernum1)
+	button02 = creatButton("player02",450,150,myplayernum2)
+	button03 = creatButton("player03",600,150,myplayernum3)
+	button10 = creatButton("level0",175,350,myspeed0)                               # button10是第一个难度等级按钮，点击按钮进入myspeed0函数，即把物体下落速度设置为5，倒计时设置为30s
+	button11 = creatButton("level1",350,350,myspeed1)                               
+	button12 = creatButton("level2",525,350,myspeed2)
+	button4 = creatButton("button0",stage.width-215,520,ensureSettings)             # button4是"开始游戏"按钮
 
 
 # 确定设置界面
 def ensureSettings(e):
 
-	global playerNum, stageLayer                    # 全局变量playerNum，stageLayer
+	global playerNum, stageLayer                                                    # 全局变量playerNum，stageLayer
 
-	# 移除原界面背景和元素
-	stageLayer.removeAllChildren()
-	stageLayer.removeAllEventListeners() 
-
-	# 创建背景元素
-	bg3 = Bitmap(BitmapData(dataList["bg3"]))
-	stageLayer.addChild(bg3)	
+        # 创建背景元素
+	bg = creatBg("bg3")
 
 	# 创建图片元素
-	myPlayer = Bitmap(BitmapData(dataList["player0%d"%playerNum]))
-	myPlayer.x = (stageLayer.width - myPlayer.width) /2
-	myPlayer.y = 150
-	stageLayer.addChild(myPlayer)
-	# 我选择的游戏人物的图片
-	
-	# 创建图片元素
-	Myspeed = Bitmap(BitmapData(dataList["level%d"%(myTime/15-2)]))
-	Myspeed.x = (stageLayer.width - myPlayer.width) / 2 + 17
-	Myspeed.y = 350
-	stageLayer.addChild(Myspeed)
-	# 我选择的难度等级的图片
+	myPlayer = creatPict("player0%d"%playerNum,354.5,150)                           # 我选择的游戏人物的图片
+	Myspeed = creatPict("level%d"%(myTime/15-2),371.5,350)                          # 我选择的难度等级的图片
 
 	# 创建按钮元素
-	button0 = Button(dataList["button2"])
-	button0.x = 150
-	button0.y = 450
-	stageLayer.addChild(button0)
-	button0.addEventListener(MouseEvent.MOUSE_UP, mySettings)
-	# button0是'返回'按钮
-
-	# 创建按钮元素
-	button1 = Button(dataList["button0"])
-	button1.x = 450
-	button1.y = 450
-	stageLayer.addChild(button1)
-	button1.addEventListener(MouseEvent.MOUSE_UP, startGame)
-	# button1是'开始游戏'按钮
+	button0 = creatButton("button2",150,450,mySettings)                             # button0是'返回'按钮
+	button1 = creatButton("button0",450,450,startGame)                              # button1是'开始游戏'按钮
 
 
 # 游戏界面
@@ -313,50 +255,34 @@ def startGame(e):
 	global player, itemLayer, scoreTxt, addItemSpeedIndex, score, keyboardEnabled,beginTime, timeTxt, playerNum
 
 	# 重新设置全局变量的值
-	addItemSpeedIndex = 0                           # 添加掉落物体的速度
-	score = 0                                       # 玩家分数,可在此处添加数据库用来记录玩家的分数！！！！！！！！！！！
-	beginTime = time.time()                         # 设置游戏开始时间
-	keyboardEnabled = True                          # 设置键盘事件使能
+	addItemSpeedIndex = 0                                                           # 添加掉落物体的速度
+	score = 0                                                                       # 玩家分数,可在此处添加数据库用来记录玩家的分数！！！！！！！！！！！
+	beginTime = time.time()                                                         # 设置游戏开始时间
+	keyboardEnabled = True                                                          # 设置键盘事件使能
 	#用于打开键盘事件,因为键盘事件是加到stage对象上的，stage生成后就可以通过键盘控制，不是我们想要的结果，所以需要增加一个控制变量
 
-	# 移除原界面背景和元素
-	stageLayer.removeAllChildren()
-	stageLayer.removeAllEventListeners()
-
-	# 创建背景元素
-	bg = Bitmap(BitmapData(dataList["bg"]))
-	stageLayer.addChild(bg)
+        # 创建背景元素
+	bg = creatBg("bg")
 
 	# 创建文本元素
-	timeTxt = TextField()
-	timeTxt.text = "剩余时间: "
-	timeTxt.size = 20
-	timeTxt.x = (stage.width - timeTxt.width)-40
-	stageLayer.addChild(timeTxt)
-	# 文本内容是游戏的剩余时间
+	timeTxt = creatTxt("剩余时间: ",20,668,0,'black')                               # 文本内容是游戏的剩余时间
 	
 	# 创建人物元素
-	player = Player(dataList["player%d"%playerNum]) # 调用选择的人物图片，创建人物类的实例对象
-	player.x = (stage.width - player.width) / 2     # 设置人物元素初始水平位置
-	player.y = 450                                  # 设置人物元素初始垂直位置
-	stageLayer.addChild(player)                     # 使人物元素图片显示在游戏界面上
+	player = Player(dataList["player%d"%playerNum])                                 # 调用选择的人物图片，创建人物类的实例对象
+	player.x = (stage.width - player.width) / 2                                     # 设置人物元素初始水平位置
+	player.y = 450                                                                  # 设置人物元素初始垂直位置
+	stageLayer.addChild(player)                                                     # 使人物元素图片显示在游戏界面上
 
 	# 创建物体元素
-	itemLayer = Sprite()                            # 创建物体层
-	stageLayer.addChild(itemLayer)                  # 使物体层显示在游戏界面上
+	itemLayer = Sprite()                                                            # 创建物体层
+	stageLayer.addChild(itemLayer)                                                  # 使物体层显示在游戏界面上
 	
 	# 检测与物体元素接触的元素
-	itemLayer.hitTarget = player                    # 将需要检测的元素设置为人物类元素
+	itemLayer.hitTarget = player                                                    # 将需要检测的元素设置为人物类元素
 
 	# 添加文本元素
-	scoreTxt = TextField()
-	scoreTxt.text = "Score: 0"
-	scoreTxt.textColor = "black"                      
-	scoreTxt.size = 30
-	scoreTxt.x = scoreTxt.y = 30
-	scoreTxt.weight = TextFormatWeight.BOLDER
-	stageLayer.addChild(scoreTxt)
-	# 文本内容为实时的分数
+	scoreTxt = creatTxt("Score: 0",30,30,30,"black")                                # 文本内容为实时的分数
+	scoreTxt.weight = TextFormatWeight.BOLDER                                       
 
 	# 添加监听器
 	stageLayer.addEventListener(Event.ENTER_FRAME, loop)
@@ -368,12 +294,12 @@ def keyDown(e):
 	
 	global player
 
-	if not keyboardEnabled or not player:           # 检测键盘事件使能是否开启或与物体产生碰撞的不是人物元素
+	if not keyboardEnabled or not player:                                           # 检测键盘事件使能是否开启或与物体产生碰撞的不是人物元素
 		return
 
-	if e.keyCode == KeyCode.KEY_RIGHT:              # 检测键盘向右方向键是否被按下，若为真，则将人物移动方向设置为向右
+	if e.keyCode == KeyCode.KEY_RIGHT:                                              # 检测键盘向右方向键是否被按下，若为真，则将人物移动方向设置为向右
 		player.direction = "right"
-	elif e.keyCode == KeyCode.KEY_LEFT:             # 检测键盘向左方向键是否被按下，若为真，则将人物移动方向设置为向左
+	elif e.keyCode == KeyCode.KEY_LEFT:                                             # 检测键盘向左方向键是否被按下，若为真，则将人物移动方向设置为向左
 		player.direction = "left"
 	#按键落下时角色受玩家控制左右移动
 
@@ -468,37 +394,23 @@ def gameOver(e):
 	player.animation.stop()                                         # 删除人物元素动画
 
 	# 创建文本元素
-	resultTxt = TextField()
 	if score < 0:                                                   # 如果得分为负，则失败
-		resultTxt.text = "你输啦！再试一次吧！"                 # 设置"失败"的文本内容
+		txt = "你输啦！再试一次吧！"                            # 设置"失败"的文本内容
+		temp_x = 360
+		temp_y = 150
 		resultPict_num = 0	                                # 设置游戏失败的图片
 	else:
-		resultTxt.text = "恭喜胜利！最终得分为: %s" % score     # 如果得分为正，则成功
+		txt = "恭喜胜利！最终得分为: %s" % score                # 如果得分为正，则成功
+		temp_x = -13
+		temp_y = 50
 		resultPict_num = 1                                      # 设置游戏胜利的图片
-	resultTxt.size = 40
-	resultTxt.weight = TextFormatWeight.BOLD
-	resultTxt.textColor = "black"
-	resultTxt.x = (stage.width - resultTxt.width) / 2
-	resultTxt.y = 250
-	stageLayer.addChild(resultTxt)
-	# 结束时显示的文本
+	resultTxt = creatTxt(txt,40,195,250,"black")                    # 结束时显示的文本
 	
 	# 创建图片元素
-	resultPict = Bitmap(BitmapData(dataList["result%d"%resultPict_num]))
-	resultPict.x = (stageLayer.width - resultPict.width) /2
-	resultPict.y = 150
-	stageLayer.addChild(resultPict)
-	# 结束时的装饰图片
+	resultPict = creatPict("result%d"%resultPict_num,temp_x,temp_y) # 结束时的装饰图片
 
 	# 创建文本元素
-	hintTxt = TextField()
-	hintTxt.text = "双击鼠标左键再次开始游戏"
-	hintTxt.size = 35
-	hintTxt.textColor = "black"
-	hintTxt.x = (stage.width - hintTxt.width) / 2
-	hintTxt.y = 320
-	stageLayer.addChild(hintTxt)
-	# 提示双击页面重新开始游戏
+	hintTxt = creatTxt("双击鼠标左键再次开始游戏",35,190,320,"black")# 提示双击页面重新开始游戏
 
 	# 添加监听器
 	stageLayer.addEventListener(MouseEvent.DOUBLE_CLICK, startGame)  # 用于监听"鼠标点击"事件，开始游戏
@@ -507,5 +419,6 @@ def gameOver(e):
 init(1000 / 60, "别偷吃零食", 800, 600, main)
 #初始化窗口,参数分别为时间轴事件更新的速度、窗口的名称、窗口的长和宽、主函数的调用
 # 文件的入口
+
 
 
