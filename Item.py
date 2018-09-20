@@ -4,8 +4,9 @@ from pylash.display import Sprite, Bitmap, BitmapData
 class Item(Sprite):
 	# define ourselves events
 	EVENT_ADD_SCORE = "event_add_score"
+	EVENT_MINUS_SCORE = "event_minus_score"
 	EVENT_GAME_OVER = "event_game_over"
-
+	mySpeed = 0
 	def __init__(self, image):
 		super(Item, self).__init__()
 		
@@ -16,6 +17,7 @@ class Item(Sprite):
 		self.y = -bmp.height / 2
 
 	def loop(self):
+		
 		player = None
 
 		if self.parent:
@@ -25,7 +27,7 @@ class Item(Sprite):
 			return
 
 		# move down
-		self.y += 5
+		self.y += self.mySpeed
 
 		# check collision
 		if (abs(self.x + self.width / 2 - player.x - player.width / 2) <= (self.width + player.width) / 2) and (abs(self.y + self.height / 2 - player.y - player.height / 2) <= (self.height + player.height) / 2):
@@ -35,8 +37,12 @@ class Item(Sprite):
 
 				self.remove()
 			else:
+				self.dispatchEvent(Item.EVENT_MINUS_SCORE)
+				self.remove()
+
+			'''else:
 				# dispatch ourselves event that enter game over
-				self.dispatchEvent(Item.EVENT_GAME_OVER)
+				self.dispatchEvent(Item.EVENT_GAME_OVER)'''
 
 		# remove self when this item moves out of stage
 		if self.y >= stage.height:
