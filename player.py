@@ -45,3 +45,5 @@ class Player(Sprite):
 		elif self.x > stage.width - self.width:
 			self.x = stage.width - self.width
 
+
+
